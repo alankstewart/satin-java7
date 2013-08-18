@@ -28,11 +28,11 @@ public final class SatinSingleThread extends AbstractSatin {
         for (final String laserDataRecord : laserData) {
             final String[] gainMediumParams = laserDataRecord.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
+            final Float smallSignalGain = Float.valueOf(gainMediumParams[1]);
             final List<Gaussian> gaussianData = new ArrayList<>();
             int count = 0;
             for (final Integer inputPower : inputPowers) {
-                final Float smallSignalGain = Float.valueOf(gainMediumParams[1]);
-                if (gaussianData
+                 if (gaussianData
                         .addAll(GaussianLaserBean.getInstance(inputPower, smallSignalGain).calculateGaussians())) {
                     count++;
                 }

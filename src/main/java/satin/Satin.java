@@ -44,10 +44,10 @@ public final class Satin extends AbstractSatin {
                     int count = 0;
                     final String[] gainMediumParams = laserDataRecord.split("  ");
                     assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
+                    final float smallSignalGain = Float.valueOf(gainMediumParams[1]);
                     final List<Gaussian> gaussianData = new ArrayList<>();
                     for (final Integer inputPower : inputPowers) {
-                        final float smallSignalGain = Float.valueOf(gainMediumParams[1]);
-                        if (gaussianData.addAll(GaussianLaserBean.getInstance(inputPower, smallSignalGain)
+                         if (gaussianData.addAll(GaussianLaserBean.getInstance(inputPower, smallSignalGain)
                                 .calculateGaussians())) {
                             count++;
                         }
