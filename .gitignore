@@ -1,0 +1,11 @@
+target/classes/laser.dat
+target/classes/logging.properties
+target/classes/pin.dat
+target/classes/satin.properties
+target/classes/satin/AbstractSatin.class
+target/classes/satin/GaussianLaserBean$Gaussian.class
+target/classes/satin/GaussianLaserBean.class
+target/classes/satin/Satin$1.class
+target/classes/satin/Satin.class
+target/classes/satin/SatinOutput.class
+target/classes/satin/SatinSingleThread.class
