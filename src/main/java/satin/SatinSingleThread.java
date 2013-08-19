@@ -12,15 +12,17 @@ public final class SatinSingleThread extends AbstractSatin {
         final long start = System.nanoTime();
         final SatinSingleThread satin = new SatinSingleThread();
         try {
-            satin.calculate();
-        } catch (final IOException e) {
+            if (!satin.calculate()) {
+                throw new IllegalStateException("SatinSingleThread failed to complete");
+            }
+        } catch (final Exception e) {
             LOGGER.severe(e.getMessage());
         } finally {
             LOGGER.info(String.format("The time was %s seconds", satin.getElapsedTime(start, System.nanoTime())));
         }
     }
 
-    private void calculate() throws IOException {
+    private boolean calculate() throws IOException {
         int total = 0;
         final List<Integer> inputPowers = getInputPowers();
         final List<String> laserData = getLaserData();
@@ -32,7 +34,7 @@ public final class SatinSingleThread extends AbstractSatin {
             final List<Gaussian> gaussianData = new ArrayList<>();
             int count = 0;
             for (final Integer inputPower : inputPowers) {
-                 if (gaussianData
+                if (gaussianData
                         .addAll(GaussianLaserBean.getInstance(inputPower, smallSignalGain).calculateGaussians())) {
                     count++;
                 }
@@ -40,9 +42,6 @@ public final class SatinSingleThread extends AbstractSatin {
             satinOutput.writeToFile(gainMediumParams, gaussianData);
             total += count;
         }
-
-        if (total != (laserData.size() * inputPowers.size())) {
-            throw new IllegalStateException("SatinSingleThread failed to complete");
-        }
+        return total == inputPowers.size() * laserData.size();
     }
 }

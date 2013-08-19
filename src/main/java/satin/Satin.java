@@ -21,7 +21,9 @@ public final class Satin extends AbstractSatin {
         final long start = System.nanoTime();
         final Satin satin = new Satin();
         try {
-            satin.calculate();
+            if (!satin.calculate()) {
+                throw new IllegalStateException("Satin failed to complete");
+            }
         } catch (final Exception e) {
             LOGGER.severe(e.getMessage());
         } finally {
@@ -30,7 +32,7 @@ public final class Satin extends AbstractSatin {
         System.exit(0);
     }
 
-    private void calculate() throws IOException {
+    private boolean calculate() throws IOException {
         final ExecutorService threadPool = Executors.newCachedThreadPool();
         final List<Future<Integer>> futures = new ArrayList<>();
 
@@ -47,7 +49,7 @@ public final class Satin extends AbstractSatin {
                     final float smallSignalGain = Float.valueOf(gainMediumParams[1]);
                     final List<Gaussian> gaussianData = new ArrayList<>();
                     for (final Integer inputPower : inputPowers) {
-                         if (gaussianData.addAll(GaussianLaserBean.getInstance(inputPower, smallSignalGain)
+                        if (gaussianData.addAll(GaussianLaserBean.getInstance(inputPower, smallSignalGain)
                                 .calculateGaussians())) {
                             count++;
                         }
@@ -57,11 +59,7 @@ public final class Satin extends AbstractSatin {
                 }
             }));
         }
-
-        final int total = monitorFutures(futures);
-        if (total != (laserData.size() * inputPowers.size())) {
-            throw new IllegalStateException("Satin failed to complete");
-        }
+        return monitorFutures(futures) == inputPowers.size() * laserData.size();
     }
 
     private int monitorFutures(final List<Future<Integer>> futures) {
