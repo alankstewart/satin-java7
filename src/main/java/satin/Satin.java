@@ -22,7 +22,7 @@ public final class Satin extends AbstractSatin {
         final Satin satin = new Satin();
         try {
             if (!satin.calculate()) {
-                throw new IllegalStateException("Satin failed to complete");
+                throw new IllegalStateException("Failed to complete successfully");
             }
         } catch (final Exception e) {
             LOGGER.severe(e.getMessage());

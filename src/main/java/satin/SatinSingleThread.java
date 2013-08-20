@@ -13,7 +13,7 @@ public final class SatinSingleThread extends AbstractSatin {
         final SatinSingleThread satin = new SatinSingleThread();
         try {
             if (!satin.calculate()) {
-                throw new IllegalStateException("SatinSingleThread failed to complete");
+                throw new IllegalStateException("Failed to complete successfully");
             }
         } catch (final Exception e) {
             LOGGER.severe(e.getMessage());
