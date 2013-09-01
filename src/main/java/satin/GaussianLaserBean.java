@@ -28,19 +28,7 @@ public final class GaussianLaserBean {
     private static final double Z12 = Z1 * Z1;
     private static final double EXPR = 2 * PI * DR;
 
-    private final int inputPower;
-    private final float smallSignalGain;
-
-    private GaussianLaserBean(final int inputPower, final float smallSignalGain) {
-        this.inputPower = inputPower;
-        this.smallSignalGain = smallSignalGain;
-    }
-
-    public static GaussianLaserBean getInstance(final int inputPower, final float smallSignalGain) {
-        return new GaussianLaserBean(inputPower, smallSignalGain);
-    }
-
-    public List<Gaussian> calculateGaussians() {
+    public List<Gaussian> calculateGaussians(final int inputPower, final float smallSignalGain) {
         final List<Gaussian> gaussians = new ArrayList<>();
 
         final double[] expr1 = new double[8 * 8001];

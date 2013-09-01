@@ -10,17 +10,7 @@ import java.util.List;
 
 public final class SatinOutput {
 
-    private final String outputFilePath;
-
-    private SatinOutput(final String outputFilePath) {
-        this.outputFilePath = outputFilePath;
-    }
-
-    public static SatinOutput getInstance(final String outputFilePath) {
-        return new SatinOutput(outputFilePath);
-    }
-
-    public void writeToFile(final String[] gainMediumParams, final List<Gaussian> gaussianData) throws IOException {
+    public void writeToFile(final String outputFilePath, final String[] gainMediumParams, final List<Gaussian> gaussianData) throws IOException {
         final File outputFile = new File(outputFilePath, gainMediumParams[0]);
         try (final Formatter formatter = new Formatter(outputFile)) {
             formatter
