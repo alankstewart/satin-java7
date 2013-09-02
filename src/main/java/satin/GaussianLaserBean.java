@@ -16,7 +16,7 @@ import static java.lang.Math.pow;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 
-public final class GaussianLaserBean {
+final class GaussianLaserBean {
 
     private static final float RAD = 0.18f;
     private static final float W1 = 0.3f;

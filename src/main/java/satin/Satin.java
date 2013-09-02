@@ -35,8 +35,6 @@ public final class Satin extends AbstractSatin {
         final List<Future<Integer>> futures = new ArrayList<>();
 
         final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean();
-        final SatinOutput satinOutput = new SatinOutput();
-        final String outputFilePath = getOutputFilePath();
         final List<Integer> inputPowers = getInputPowers();
         final List<String> laserData = getLaserData();
         for (final String laserDataRecord : laserData) {
@@ -53,7 +51,7 @@ public final class Satin extends AbstractSatin {
                             count++;
                         }
                     }
-                    satinOutput.writeToFile(outputFilePath, gainMediumParams, gaussianData);
+                    writeToFile(gainMediumParams, gaussianData);
                     return count;
                 }
             }));

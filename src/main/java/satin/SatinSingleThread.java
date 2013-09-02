@@ -23,10 +23,8 @@ public final class SatinSingleThread extends AbstractSatin {
     private void calculate() throws IOException {
         int total = 0;
         final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean();
-        final SatinOutput satinOutput = new SatinOutput();
         final List<Integer> inputPowers = getInputPowers();
         final List<String> laserData = getLaserData();
-        final String outputFilePath = getOutputFilePath();
         for (final String laserDataRecord : laserData) {
             final String[] gainMediumParams = laserDataRecord.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
@@ -38,7 +36,7 @@ public final class SatinSingleThread extends AbstractSatin {
                     count++;
                 }
             }
-            satinOutput.writeToFile(outputFilePath, gainMediumParams, gaussianData);
+            writeToFile(gainMediumParams, gaussianData);
             total += count;
         }
         if (total != inputPowers.size() * laserData.size()) {
