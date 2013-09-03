@@ -41,7 +41,7 @@ abstract class AbstractSatin {
         }
     }
 
-     BigDecimal getElapsedTime(final long start, final long end) {
+    BigDecimal getElapsedTime(final long start, final long end) {
         return valueOf(end - start).divide(valueOf(1E9), 2, ROUND_HALF_UP);
     }
 
