@@ -22,7 +22,6 @@ public final class SatinSingleThread extends AbstractSatin {
 
     private void calculate() throws IOException {
         int total = 0;
-        final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean();
         final List<Integer> inputPowers = getInputPowers();
         final List<String> laserData = getLaserData();
         for (final String laserDataRecord : laserData) {
@@ -32,7 +31,8 @@ public final class SatinSingleThread extends AbstractSatin {
             final List<Gaussian> gaussianData = new ArrayList<>();
             int count = 0;
             for (final Integer inputPower : inputPowers) {
-                if (gaussianData.addAll(gaussianLaserBean.calculateGaussians(inputPower, smallSignalGain))) {
+                final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean(inputPower, smallSignalGain);
+                if (gaussianData.addAll(gaussianLaserBean.calculateGaussians())) {
                     count++;
                 }
             }

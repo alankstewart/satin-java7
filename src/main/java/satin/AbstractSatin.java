@@ -54,7 +54,7 @@ abstract class AbstractSatin {
             for (final GaussianLaserBean.Gaussian gaussian : gaussianData) {
                 formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s%n", gaussian.getInputPower(), gaussian
                         .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
-                        .getLogOutputPowerOverInputPower(), gaussian.getOutputPowerMinusInputPower());
+                        .getLogOutputPowerDividedByInputPower(), gaussian.getOutputPowerMinusInputPower());
             }
             formatter.format("%nEnd date: %s%n", Calendar.getInstance().getTime());
         }

@@ -34,7 +34,6 @@ public final class Satin extends AbstractSatin {
         final ExecutorService threadPool = Executors.newCachedThreadPool();
         final List<Future<Integer>> futures = new ArrayList<>();
 
-        final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean();
         final List<Integer> inputPowers = getInputPowers();
         final List<String> laserData = getLaserData();
         for (final String laserDataRecord : laserData) {
@@ -47,7 +46,8 @@ public final class Satin extends AbstractSatin {
                     final float smallSignalGain = Float.valueOf(gainMediumParams[1]);
                     final List<Gaussian> gaussianData = new ArrayList<>();
                     for (final Integer inputPower : inputPowers) {
-                        if (gaussianData.addAll(gaussianLaserBean.calculateGaussians(inputPower, smallSignalGain))) {
+                        final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean(inputPower, smallSignalGain);
+                        if (gaussianData.addAll(gaussianLaserBean.calculateGaussians())) {
                             count++;
                         }
                     }

@@ -28,7 +28,15 @@ final class GaussianLaserBean {
     private static final double Z12 = Z1 * Z1;
     private static final double EXPR = 2 * PI * DR;
 
-    public List<Gaussian> calculateGaussians(final int inputPower, final float smallSignalGain) {
+    private final int inputPower;
+    private final float smallSignalGain;
+
+    public GaussianLaserBean(final int inputPower, final float smallSignalGain) {
+        this.inputPower = inputPower;
+        this.smallSignalGain = smallSignalGain;
+    }
+
+    public List<Gaussian> calculateGaussians() {
         final List<Gaussian> gaussians = new ArrayList<>();
 
         final double[] expr1 = new double[8 * 8001];
@@ -80,7 +88,7 @@ final class GaussianLaserBean {
             return BigInteger.valueOf(saturationIntensity);
         }
 
-        public BigDecimal getLogOutputPowerOverInputPower() {
+        public BigDecimal getLogOutputPowerDividedByInputPower() {
             return valueOf(log(outputPower / inputPower)).setScale(3, ROUND_HALF_UP);
         }
 
