@@ -31,8 +31,7 @@ public final class SatinSingleThread extends AbstractSatin {
             final List<Gaussian> gaussianData = new ArrayList<>();
             int count = 0;
             for (final Integer inputPower : inputPowers) {
-                final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean(inputPower, smallSignalGain);
-                if (gaussianData.addAll(gaussianLaserBean.calculateGaussians())) {
+                if (gaussianData.addAll(new GaussianLaserBean(inputPower, smallSignalGain).calculateGaussians())) {
                     count++;
                 }
             }

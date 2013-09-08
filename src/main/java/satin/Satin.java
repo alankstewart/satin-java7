@@ -46,8 +46,8 @@ public final class Satin extends AbstractSatin {
                     final float smallSignalGain = Float.valueOf(gainMediumParams[1]);
                     final List<Gaussian> gaussianData = new ArrayList<>();
                     for (final Integer inputPower : inputPowers) {
-                        final GaussianLaserBean gaussianLaserBean = new GaussianLaserBean(inputPower, smallSignalGain);
-                        if (gaussianData.addAll(gaussianLaserBean.calculateGaussians())) {
+                        if (gaussianData
+                                .addAll(new GaussianLaserBean(inputPower, smallSignalGain).calculateGaussians())) {
                             count++;
                         }
                     }
