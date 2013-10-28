@@ -1,4 +1,6 @@
-package satin;
+package alankstewart.satin;
+
+import alankstewart.satin.GaussianLaserBean.Gaussian;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,13 +47,13 @@ abstract class AbstractSatin {
         return valueOf(end - start).divide(valueOf(1E9), 2, ROUND_HALF_UP);
     }
 
-    void writeToFile(final String[] gainMediumParams, final List<GaussianLaserBean.Gaussian> gaussianData) throws IOException {
+    void writeToFile(final String[] gainMediumParams, final List<Gaussian> gaussianData) throws IOException {
         final File outputFile = new File(getOutputFilePath(), gainMediumParams[0]);
         try (final Formatter formatter = new Formatter(outputFile)) {
             formatter
                     .format("Start date: %s%n%nGaussian Beam%n%nPressure in Main Discharge = %skPa%nSmall-signal Gain = %s %%%nCO2 via %s%n%nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin%n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)%n", Calendar
                             .getInstance().getTime(), gainMediumParams[2], gainMediumParams[1], gainMediumParams[3]);
-            for (final GaussianLaserBean.Gaussian gaussian : gaussianData) {
+            for (final Gaussian gaussian : gaussianData) {
                 formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s%n", gaussian.getInputPower(), gaussian
                         .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
                         .getLogOutputPowerDividedByInputPower(), gaussian.getOutputPowerMinusInputPower());
