@@ -35,23 +35,20 @@ public final class Satin extends AbstractSatin {
         final List<Future<Integer>> futures = new ArrayList<>();
 
         final List<Integer> inputPowers = getInputPowers();
-        final List<String> laserData = getLaserData();
-        for (final String laserDataRecord : laserData) {
+        final List<Laser> laserData = getLaserData();
+        for (final Laser laser : laserData) {
             futures.add(threadPool.submit(new Callable<Integer>() {
                 @Override
                 public Integer call() throws Exception {
                     int count = 0;
-                    final String[] gainMediumParams = laserDataRecord.split("  ");
-                    assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
-                    final float smallSignalGain = Float.valueOf(gainMediumParams[1]);
                     final List<Gaussian> gaussianData = new ArrayList<>();
                     for (final Integer inputPower : inputPowers) {
                         if (gaussianData
-                                .addAll(new GaussianLaserBean(inputPower, smallSignalGain).calculateGaussians())) {
+                                .addAll(new GaussianLaserBean(inputPower, laser.getSmallSignalGain()).calculateGaussians())) {
                             count++;
                         }
                     }
-                    writeToFile(gainMediumParams, gaussianData);
+                    writeToFile(laser, gaussianData);
                     return count;
                 }
             }));
