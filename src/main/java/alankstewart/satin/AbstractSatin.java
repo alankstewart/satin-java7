@@ -91,7 +91,8 @@ abstract class AbstractSatin {
         private final int dischargePressure;
         private final CO2 carbonDioxide;
 
-        Laser(final String outputFile, final float smallSignalGain, final int dischargePressure, final CO2 carbonDioxide) {
+        Laser(final String outputFile, final float smallSignalGain, final int dischargePressure,
+              final CO2 carbonDioxide) {
             this.outputFile = outputFile;
             this.smallSignalGain = smallSignalGain;
             this.dischargePressure = dischargePressure;
