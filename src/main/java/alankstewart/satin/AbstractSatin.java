@@ -61,8 +61,8 @@ abstract class AbstractSatin {
         try (final Formatter formatter = new Formatter(outputFile)) {
             formatter
                     .format("Start date: %s%n%nGaussian Beam%n%nPressure in Main Discharge = %skPa%nSmall-signal Gain = %s%% %nCO2 via %s%n%nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin%n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)%n", Calendar
-                            .getInstance().getTime(), laser.getMainDischargePressure(), laser
-                            .getSmallSignalGain(), laser.getCo2().name());
+                            .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
+                            .getCarbonDioxide().name());
             for (final Gaussian gaussian : gaussianData) {
                 formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s%n", gaussian.getInputPower(), gaussian
                         .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
@@ -88,14 +88,14 @@ abstract class AbstractSatin {
 
         private final String outputFile;
         private final float smallSignalGain;
-        private final int mainDischargePressure;
-        private final CO2 co2;
+        private final int dischargePressure;
+        private final CO2 carbonDioxide;
 
-        Laser(final String outputFile, final float smallSignalGain, final int mainDischargePressure, final CO2 co2) {
+        Laser(final String outputFile, final float smallSignalGain, final int dischargePressure, final CO2 carbonDioxide) {
             this.outputFile = outputFile;
             this.smallSignalGain = smallSignalGain;
-            this.mainDischargePressure = mainDischargePressure;
-            this.co2 = co2;
+            this.dischargePressure = dischargePressure;
+            this.carbonDioxide = carbonDioxide;
         }
 
         public String getOutputFile() {
@@ -106,12 +106,12 @@ abstract class AbstractSatin {
             return smallSignalGain;
         }
 
-        public int getMainDischargePressure() {
-            return mainDischargePressure;
+        public int getDischargePressure() {
+            return dischargePressure;
         }
 
-        public CO2 getCo2() {
-            return co2;
+        public CO2 getCarbonDioxide() {
+            return carbonDioxide;
         }
     }
 }
