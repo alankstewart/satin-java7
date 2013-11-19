@@ -31,8 +31,6 @@ abstract class AbstractSatin {
 
     private static Properties properties = new Properties();
 
-    private enum CO2 {MD, PI}
-
     static {
         try (final InputStream inputStream = AbstractSatin.class.getResourceAsStream("/satin.properties")) {
             properties.load(inputStream);
@@ -56,8 +54,8 @@ abstract class AbstractSatin {
                 .getProperty(DATA_FILE_PATH), "laser.dat"), defaultCharset())) {
             final String[] gainMediumParams = line.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
-            laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]), parseInt(gainMediumParams[2]
-                    .trim()), CO2.valueOf(gainMediumParams[3])));
+            laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
+                    .trim()), parseInt(gainMediumParams[2].trim()), gainMediumParams[3]));
         }
         return laserData;
     }
@@ -73,7 +71,7 @@ abstract class AbstractSatin {
             formatter
                     .format("Start date: %s%n%nGaussian Beam%n%nPressure in Main Discharge = %skPa%nSmall-signal Gain = %s%% %nCO2 via %s%n%nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin%n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)%n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
-                            .getCarbonDioxide().name());
+                            .getCarbonDioxide());
             for (final Gaussian gaussian : gaussianData) {
                 formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s%n", gaussian.getInputPower(), gaussian
                         .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
@@ -88,10 +86,9 @@ abstract class AbstractSatin {
         private final String outputFile;
         private final float smallSignalGain;
         private final int dischargePressure;
-        private final CO2 carbonDioxide;
+        private final String carbonDioxide;
 
-        Laser(final String outputFile, final float smallSignalGain, final int dischargePressure,
-              final CO2 carbonDioxide) {
+        Laser(final String outputFile, final float smallSignalGain, final int dischargePressure, final String carbonDioxide) {
             this.outputFile = outputFile;
             this.smallSignalGain = smallSignalGain;
             this.dischargePressure = dischargePressure;
@@ -110,7 +107,7 @@ abstract class AbstractSatin {
             return dischargePressure;
         }
 
-        public CO2 getCarbonDioxide() {
+        public String getCarbonDioxide() {
             return carbonDioxide;
         }
     }
