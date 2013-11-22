@@ -69,15 +69,15 @@ abstract class AbstractSatin {
         deleteIfExists(path);
         try (final Formatter formatter = new Formatter(createFile(path).toFile())) {
             formatter
-                    .format("Start date: %s%n%nGaussian Beam%n%nPressure in Main Discharge = %skPa%nSmall-signal Gain = %s%% %nCO2 via %s%n%nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin%n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)%n", Calendar
+                    .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s%% \nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
                             .getCarbonDioxide());
             for (final Gaussian gaussian : gaussianData) {
-                formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s%n", gaussian.getInputPower(), gaussian
+                formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\n", gaussian.getInputPower(), gaussian
                         .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
                         .getLogOutputPowerDividedByInputPower(), gaussian.getOutputPowerMinusInputPower());
             }
-            formatter.format("%nEnd date: %s%n", Calendar.getInstance().getTime());
+            formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
         }
     }
 
