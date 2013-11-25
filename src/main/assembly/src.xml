@@ -20,7 +20,6 @@
             <directoryMode>0755</directoryMode>
             <includes>
                 <include>satin</include>
-                <include>satinSingleThread</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -35,8 +34,7 @@
             <lineEnding>unix</lineEnding>
             <outputDirectory>etc</outputDirectory>
             <includes>
-                <include>*.xml</include>
-                <include>*.properties</include>
+                 <include>*.properties</include>
                 <include>*.dat</include>
             </includes>
         </fileSet>
