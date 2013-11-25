@@ -34,7 +34,7 @@
             <lineEnding>unix</lineEnding>
             <outputDirectory>etc</outputDirectory>
             <includes>
-                 <include>*.properties</include>
+                <include>*.properties</include>
                 <include>*.dat</include>
             </includes>
         </fileSet>
