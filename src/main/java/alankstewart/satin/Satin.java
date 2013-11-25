@@ -13,6 +13,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -89,13 +90,16 @@ public final class Satin {
             });
         }
         try {
+            int total = 0;
             final ExecutorService executorService = Executors.newCachedThreadPool();
-            final List<Future<Integer>> futures = executorService.invokeAll(tasks);
+            for (final Future<Integer> future : executorService.invokeAll(tasks)) {
+                 total += future.get();
+            }
             executorService.shutdown();
-            return futures.size() == laserData.size();
-        } catch (final InterruptedException e) {
+            return total == laserData.size() * inputPowers.size();
+        } catch (final InterruptedException | ExecutionException e) {
             throw new IllegalStateException(e);
-        }
+         }
     }
 
     private boolean calculate() throws IOException {
