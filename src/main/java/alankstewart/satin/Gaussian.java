@@ -7,7 +7,7 @@ import static java.lang.Math.log;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 
-public class Gaussian {
+public final class Gaussian {
 
     private final int inputPower;
     private final double outputPower;
