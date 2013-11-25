@@ -64,8 +64,7 @@ public final class Satin {
         final long start = System.nanoTime();
         final Satin satin = new Satin();
         try {
-            boolean success = concurrent ? satin.calculateConcurrent() : satin.calculate();
-            if (!success) {
+            if (!satin.calculate(concurrent)) {
                 LOGGER.severe("Failed to complete");
             }
         } catch (final IOException | RuntimeException e) {
@@ -76,41 +75,36 @@ public final class Satin {
         }
     }
 
-    private boolean calculateConcurrent() throws IOException {
+    private boolean calculate(final boolean concurrent) throws IOException {
         final List<Integer> inputPowers = getInputPowers();
         final List<Laser> laserData = getLaserData();
-
-        final List<Callable<Integer>> tasks = new ArrayList();
-        for (final Laser laser : laserData) {
-            tasks.add(new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    return process(inputPowers, laser);
-                }
-            });
-        }
-        try {
-            int total = 0;
-            final ExecutorService executorService = Executors.newCachedThreadPool();
-            for (final Future<Integer> future : executorService.invokeAll(tasks)) {
-                 total += future.get();
-            }
-            executorService.shutdown();
-            return total == laserData.size() * inputPowers.size();
-        } catch (final InterruptedException | ExecutionException e) {
-            throw new IllegalStateException(e);
-         }
-    }
-
-    private boolean calculate() throws IOException {
-        final List<Integer> inputPowers = getInputPowers();
-        final List<Laser> laserData = getLaserData();
-
         int total = 0;
-        for (final Laser laser : laserData) {
-            total += process(inputPowers, laser);
+
+        if (concurrent) {
+            final List<Callable<Integer>> tasks = new ArrayList();
+            for (final Laser laser : laserData) {
+                tasks.add(new Callable<Integer>() {
+                    @Override
+                    public Integer call() throws Exception {
+                        return process(inputPowers, laser);
+                    }
+                });
+            }
+            try {
+                final ExecutorService executorService = Executors.newCachedThreadPool();
+                for (final Future<Integer> future : executorService.invokeAll(tasks)) {
+                    total += future.get();
+                }
+                executorService.shutdown();
+            } catch (final InterruptedException | ExecutionException e) {
+                throw new IllegalStateException(e);
+            }
+        } else {
+            for (final Laser laser : laserData) {
+                total += process(inputPowers, laser);
+            }
         }
-        return total == inputPowers.size() * laserData.size();
+        return total == laserData.size() * inputPowers.size();
     }
 
     private List<Integer> getInputPowers() throws IOException {
