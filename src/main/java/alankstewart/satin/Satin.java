@@ -60,11 +60,10 @@ public final class Satin {
     }
 
     public static void main(final String[] args) {
-        final boolean concurrent = args != null && args.length > 0 && args[0].equals("-concurrent");
         final long start = System.nanoTime();
         final Satin satin = new Satin();
         try {
-            if (!satin.calculate(concurrent)) {
+            if (!satin.calculate(args != null && args.length > 0 && args[0].equals("-concurrent"))) {
                 LOGGER.severe("Failed to complete");
             }
         } catch (final IOException | RuntimeException e) {
