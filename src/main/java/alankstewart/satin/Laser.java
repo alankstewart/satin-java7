@@ -1,6 +1,6 @@
 package alankstewart.satin;
 
-public class Laser {
+public final class Laser {
 
     private final String outputFile;
     private final float smallSignalGain;
@@ -29,5 +29,11 @@ public class Laser {
 
     public String getCarbonDioxide() {
         return carbonDioxide;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append(outputFile).append("  ").append(smallSignalGain).append("  ")
+                .append(dischargePressure).append("  ").append(carbonDioxide).toString();
     }
 }
