@@ -24,6 +24,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.Math.PI;
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
+import static java.lang.System.nanoTime;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
@@ -61,7 +62,7 @@ public final class Satin {
     }
 
     public static void main(final String[] args) {
-        final long start = System.nanoTime();
+        final long start = nanoTime();
         final Satin satin = new Satin();
         try {
             if (!satin.calculate(args != null && args.length > 0 && args[0].equals("-concurrent"))) {
@@ -70,7 +71,7 @@ public final class Satin {
         } catch (final IOException | RuntimeException e) {
             LOGGER.severe(e.getMessage());
         } finally {
-            LOGGER.info(String.format("The time was %s seconds", valueOf(System.nanoTime() - start)
+            LOGGER.info(String.format("The time was %s seconds", valueOf(nanoTime() - start)
                     .divide(valueOf(1E9), 2, ROUND_HALF_UP)));
         }
     }
