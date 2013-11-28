@@ -65,7 +65,7 @@ public final class Satin {
         final long start = nanoTime();
         final Satin satin = new Satin();
         try {
-            if (!satin.calculate(args != null && args.length > 0 && args[0].equals("-concurrent"))) {
+            if (!satin.calculate(args.length > 0 && args[0].equals("-concurrent"))) {
                 LOGGER.severe("Failed to complete");
             }
         } catch (final IOException | RuntimeException e) {
