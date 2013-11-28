@@ -51,7 +51,7 @@ public final class Satin {
     private static String outputFilePath;
 
     static {
-        try (final InputStream inputStream = Satin.class.getResourceAsStream("/satin.properties")) {
+        try (final InputStream inputStream = Satin.class.getResourceAsStream("/application.properties")) {
             final Properties properties = new Properties();
             properties.load(inputStream);
             dataFilePath = properties.getProperty("dataFilePath");
