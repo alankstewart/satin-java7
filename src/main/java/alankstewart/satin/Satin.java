@@ -77,8 +77,8 @@ public final class Satin {
     }
 
     private boolean calculate(final boolean concurrent) throws IOException {
-        final List<Integer> inputPowers = getInputPowers();
-        final List<Laser> laserData = getLaserData();
+        final int[] inputPowers = getInputPowers();
+        final Laser[] laserData = getLaserData();
         int total = 0;
 
         if (concurrent) {
@@ -105,29 +105,31 @@ public final class Satin {
                 total += process(inputPowers, laser);
             }
         }
-        return total == laserData.size() * inputPowers.size();
+        return total == laserData.length * inputPowers.length;
     }
 
-    private List<Integer> getInputPowers() throws IOException {
-        final List<Integer> inputPowers = new ArrayList<>();
-        for (final String line : readAllLines(get(dataFilePath, "pin.dat"), defaultCharset())) {
-            inputPowers.add(parseInt(line));
+    private int[] getInputPowers() throws IOException {
+        final List<String> lines = readAllLines(get(dataFilePath, "pin.dat"), defaultCharset());
+        final int[] inputPowers = new int[lines.size()];
+        for (int i = 0; i < lines.size(); i++) {
+            inputPowers[i] = parseInt(lines.get(i));
         }
         return inputPowers;
     }
 
-    private List<Laser> getLaserData() throws IOException {
-        final List<Laser> laserData = new ArrayList<>();
-        for (final String line : readAllLines(get(dataFilePath, "laser.dat"), defaultCharset())) {
-            final String[] gainMediumParams = line.split("  ");
+    private Laser[] getLaserData() throws IOException {
+        final List<String> lines = readAllLines(get(dataFilePath, "laser.dat"), defaultCharset());
+        final Laser[] laserData = new Laser[lines.size()];
+        for (int i = 0; i < lines.size(); i++) {
+            final String[] gainMediumParams = lines.get(i).split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
-            laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
-                    .trim()), parseInt(gainMediumParams[2].trim()), gainMediumParams[3]));
+            laserData[i] = new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
+                    .trim()), parseInt(gainMediumParams[2].trim()), gainMediumParams[3]);
         }
         return laserData;
     }
 
-    private int process(final List<Integer> inputPowers, final Laser laser) throws IOException {
+    private int process(final int[] inputPowers, final Laser laser) throws IOException {
         final Path path = get(outputFilePath, laser.getOutputFile());
         deleteIfExists(path);
         int count = 0;
@@ -136,7 +138,7 @@ public final class Satin {
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
                             .getCarbonDioxide());
-            for (final Integer inputPower : inputPowers) {
+            for (final int inputPower : inputPowers) {
                 for (final Gaussian gaussian : gaussianCalculation(inputPower, laser.getSmallSignalGain())) {
                     formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\n", gaussian.getInputPower(), gaussian
                             .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
