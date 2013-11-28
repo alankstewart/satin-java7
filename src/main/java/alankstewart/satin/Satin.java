@@ -154,7 +154,7 @@ public final class Satin {
     private List<Gaussian> gaussianCalculation(final int inputPower, final float smallSignalGain) {
         final List<Gaussian> gaussians = new ArrayList<>();
 
-        final double[] expr1 = new double[8 * INCR];
+        final double[] expr1 = new double[INCR];
         for (int i = 0; i < INCR; i++) {
             final double zInc = ((double) i - 4000) / 25;
             expr1[i] = 2 * zInc * DZ / (Z12 + pow(zInc, 2));
