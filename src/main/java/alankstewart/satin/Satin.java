@@ -72,7 +72,7 @@ public final class Satin {
             LOGGER.severe(e.getMessage());
         } finally {
             LOGGER.info(String.format("The time was %s seconds", valueOf(nanoTime() - start)
-                    .divide(valueOf(1E9), 2, ROUND_HALF_UP)));
+                    .divide(valueOf(1E9), 3, ROUND_HALF_UP)));
         }
     }
 
