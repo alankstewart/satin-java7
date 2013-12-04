@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import static alankstewart.satin.Laser.CO2;
 import static java.lang.Float.parseFloat;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.PI;
@@ -124,7 +125,7 @@ public final class Satin {
             final String[] gainMediumParams = lines.get(i).split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
             laserData[i] = new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
-                    .trim()), parseInt(gainMediumParams[2].trim()), gainMediumParams[3]);
+                    .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim()));
         }
         return laserData;
     }
@@ -137,7 +138,7 @@ public final class Satin {
             formatter
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
-                            .getCarbonDioxide());
+                            .getCarbonDioxide().name());
             for (final int inputPower : inputPowers) {
                 for (final Gaussian gaussian : gaussianCalculation(inputPower, laser.getSmallSignalGain())) {
                     formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\n", gaussian.getInputPower(), gaussian
