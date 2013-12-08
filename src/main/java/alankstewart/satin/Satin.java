@@ -46,16 +46,15 @@ public final class Satin {
     private static final double Z12 = Z1 * Z1;
     private static final double EXPR = 2 * PI * DR;
     private static final int INCR = 8001;
-
-    private static String dataFilePath;
-    private static String outputFilePath;
+    private static final String DATA_FILE_PATH;
+    private static final String OUTPUT_FILE_PATH;
 
     static {
         try (final InputStream inputStream = Satin.class.getResourceAsStream("/application.properties")) {
             final Properties properties = new Properties();
             properties.load(inputStream);
-            dataFilePath = properties.getProperty("dataFilePath");
-            outputFilePath = properties.getProperty("outputFilePath");
+            DATA_FILE_PATH = properties.getProperty("dataFilePath");
+            OUTPUT_FILE_PATH = properties.getProperty("outputFilePath");
         } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
@@ -109,7 +108,7 @@ public final class Satin {
     }
 
     private int[] getInputPowers() throws IOException {
-        final List<String> lines = readAllLines(get(dataFilePath, "pin.dat"), defaultCharset());
+        final List<String> lines = readAllLines(get(DATA_FILE_PATH, "pin.dat"), defaultCharset());
         final int[] inputPowers = new int[lines.size()];
         for (int i = 0; i < lines.size(); i++) {
             inputPowers[i] = parseInt(lines.get(i));
@@ -118,7 +117,7 @@ public final class Satin {
     }
 
     private Laser[] getLaserData() throws IOException {
-        final List<String> lines = readAllLines(get(dataFilePath, "laser.dat"), defaultCharset());
+        final List<String> lines = readAllLines(get(DATA_FILE_PATH, "laser.dat"), defaultCharset());
         final Laser[] laserData = new Laser[lines.size()];
         for (int i = 0; i < lines.size(); i++) {
             final String[] gainMediumParams = lines.get(i).split("  ");
@@ -130,7 +129,7 @@ public final class Satin {
     }
 
     private int process(final int[] inputPowers, final Laser laser) throws IOException {
-        final Path path = get(outputFilePath, laser.getOutputFile());
+        final Path path = get(OUTPUT_FILE_PATH, laser.getOutputFile());
         deleteIfExists(path);
         int count = 0;
         try (final Formatter formatter = new Formatter(createFile(path).toFile())) {
