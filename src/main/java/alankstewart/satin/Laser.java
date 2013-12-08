@@ -9,8 +9,7 @@ public final class Laser {
     private final int dischargePressure;
     private final CO2 carbonDioxide;
 
-    public Laser(final String outputFile, final float smallSignalGain, final int dischargePressure,
-                 final CO2 carbonDioxide) {
+    public Laser(final String outputFile, final float smallSignalGain, final int dischargePressure, final CO2 carbonDioxide) {
         this.outputFile = outputFile;
         this.smallSignalGain = smallSignalGain;
         this.dischargePressure = dischargePressure;
@@ -35,7 +34,6 @@ public final class Laser {
 
     @Override
     public String toString() {
-        return new StringBuilder().append(outputFile).append("  ").append(smallSignalGain).append("  ")
-                .append(dischargePressure).append("  ").append(carbonDioxide.name()).toString();
+        return String.format("%s  %s  %s  %s", outputFile, smallSignalGain, dischargePressure, carbonDioxide);
     }
 }

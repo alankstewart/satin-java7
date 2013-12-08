@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 
 import static alankstewart.satin.Laser.CO2;
 import static java.lang.Float.parseFloat;
@@ -26,6 +25,7 @@ import static java.lang.Math.PI;
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
 import static java.lang.System.nanoTime;
+import static java.lang.System.out;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
@@ -36,7 +36,6 @@ import static java.nio.file.Paths.get;
 
 public final class Satin {
 
-    private static final Logger LOGGER = Logger.getLogger(Satin.class.getName());
     private static final float RAD = 0.18f;
     private static final float W1 = 0.3f;
     private static final float DR = 0.002f;
@@ -67,13 +66,13 @@ public final class Satin {
         final Satin satin = new Satin();
         try {
             if (!satin.calculate(args.length > 0 && args[0].equals("-concurrent"))) {
-                LOGGER.severe("Failed to complete");
+                out.format("Failed to complete");
             }
         } catch (final IOException | RuntimeException e) {
-            LOGGER.severe(e.getMessage());
+            out.format(e.getMessage());
         } finally {
-            LOGGER.info(String.format("The time was %s seconds", valueOf(nanoTime() - start)
-                    .divide(valueOf(1E9), 3, ROUND_HALF_UP)));
+            out.format("The time was %s seconds", valueOf(nanoTime() - start)
+                    .divide(valueOf(1E9), 3, ROUND_HALF_UP));
         }
     }
 
