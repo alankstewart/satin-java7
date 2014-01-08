@@ -76,8 +76,8 @@ public final class Satin {
     }
 
     private boolean calculate(final boolean concurrent) throws IOException {
-        final int[] inputPowers = getInputPowers();
-        final Laser[] laserData = getLaserData();
+        final List<Integer> inputPowers = getInputPowers();
+        final List<Laser> laserData = getLaserData();
         int total = 0;
 
         if (concurrent) {
@@ -104,31 +104,31 @@ public final class Satin {
                 total += process(inputPowers, laser);
             }
         }
-        return total == laserData.length * inputPowers.length;
+        return total == laserData.size() * inputPowers.size();
     }
 
-    private int[] getInputPowers() throws IOException {
+    private List<Integer> getInputPowers() throws IOException {
+        final List<Integer> inputPowers = new ArrayList();
         final List<String> lines = readAllLines(get(DATA_FILE_PATH, "pin.dat"), defaultCharset());
-        final int[] inputPowers = new int[lines.size()];
-        for (int i = 0; i < lines.size(); i++) {
-            inputPowers[i] = parseInt(lines.get(i));
+        for (final String line : lines) {
+            inputPowers.add(parseInt(line));
         }
         return inputPowers;
     }
 
-    private Laser[] getLaserData() throws IOException {
+    private List<Laser> getLaserData() throws IOException {
+        final List<Laser> laserData = new ArrayList<>();
         final List<String> lines = readAllLines(get(DATA_FILE_PATH, "laser.dat"), defaultCharset());
-        final Laser[] laserData = new Laser[lines.size()];
-        for (int i = 0; i < lines.size(); i++) {
-            final String[] gainMediumParams = lines.get(i).split("  ");
+        for (final String line : lines) {
+            final String[] gainMediumParams = line.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
-            laserData[i] = new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
-                    .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim()));
+            laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
+                    .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim())));
         }
         return laserData;
     }
 
-    private int process(final int[] inputPowers, final Laser laser) throws IOException {
+    private int process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = get(OUTPUT_FILE_PATH, laser.getOutputFile());
         deleteIfExists(path);
         int count = 0;
