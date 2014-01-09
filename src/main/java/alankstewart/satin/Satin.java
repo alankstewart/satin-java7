@@ -81,7 +81,7 @@ public final class Satin {
         int total = 0;
 
         if (concurrent) {
-            final List<Callable<Integer>> tasks = new ArrayList();
+            final List<Callable<Integer>> tasks = new ArrayList(laserData.size());
             for (final Laser laser : laserData) {
                 tasks.add(new Callable<Integer>() {
                     @Override
@@ -108,8 +108,8 @@ public final class Satin {
     }
 
     private List<Integer> getInputPowers() throws IOException {
-        final List<Integer> inputPowers = new ArrayList();
         final List<String> lines = readAllLines(get(DATA_FILE_PATH, "pin.dat"), defaultCharset());
+        final List<Integer> inputPowers = new ArrayList(lines.size());
         for (final String line : lines) {
             inputPowers.add(parseInt(line));
         }
@@ -117,8 +117,8 @@ public final class Satin {
     }
 
     private List<Laser> getLaserData() throws IOException {
-        final List<Laser> laserData = new ArrayList<>();
         final List<String> lines = readAllLines(get(DATA_FILE_PATH, "laser.dat"), defaultCharset());
+        final List<Laser> laserData = new ArrayList<>(lines.size());
         for (final String line : lines) {
             final String[] gainMediumParams = line.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
