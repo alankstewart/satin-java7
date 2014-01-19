@@ -90,14 +90,15 @@ public final class Satin {
                     }
                 });
             }
+            final ExecutorService executorService = Executors.newCachedThreadPool();
             try {
-                final ExecutorService executorService = Executors.newCachedThreadPool();
                 for (final Future<Integer> future : executorService.invokeAll(tasks)) {
                     total += future.get();
                 }
-                executorService.shutdown();
             } catch (final InterruptedException | ExecutionException e) {
                 throw new IllegalStateException(e);
+            } finally {
+                executorService.shutdown();
             }
         } else {
             for (final Laser laser : laserData) {
