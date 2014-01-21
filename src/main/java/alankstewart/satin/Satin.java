@@ -7,11 +7,12 @@ package alankstewart.satin;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -28,11 +29,8 @@ import static java.lang.System.nanoTime;
 import static java.lang.System.out;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
-import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.file.Files.createFile;
 import static java.nio.file.Files.deleteIfExists;
-import static java.nio.file.Files.readAllLines;
-import static java.nio.file.Paths.get;
 
 public final class Satin {
 
@@ -46,31 +44,18 @@ public final class Satin {
     private static final double Z12 = Z1 * Z1;
     private static final double EXPR = 2 * PI * DR;
     private static final int INCR = 8001;
-    private static final String DATA_FILE_PATH;
-    private static final String OUTPUT_FILE_PATH;
-
-    static {
-        try (final InputStream inputStream = Satin.class.getResourceAsStream("/application.properties")) {
-            final Properties properties = new Properties();
-            properties.load(inputStream);
-            DATA_FILE_PATH = properties.getProperty("dataFilePath");
-            OUTPUT_FILE_PATH = properties.getProperty("outputFilePath");
-        } catch (final IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     public static void main(final String[] args) {
         final long start = nanoTime();
         final Satin satin = new Satin();
         try {
             if (!satin.calculate(args.length > 0 && args[0].equals("-concurrent"))) {
-                out.format("Failed to complete");
+                out.format("Failed to complete\n");
             }
         } catch (final IOException | RuntimeException e) {
-            out.format(e.getMessage());
+            out.format("%s\n", e.getMessage());
         } finally {
-            out.format("The time was %s seconds", valueOf(nanoTime() - start)
+            out.format("The time was %s seconds\n", valueOf(nanoTime() - start)
                     .divide(valueOf(1E9), 3, ROUND_HALF_UP));
         }
     }
@@ -109,18 +94,16 @@ public final class Satin {
     }
 
     private List<Integer> getInputPowers() throws IOException {
-        final List<String> lines = readAllLines(get(DATA_FILE_PATH, "pin.dat"), defaultCharset());
-        final List<Integer> inputPowers = new ArrayList<>(lines.size());
-        for (final String line : lines) {
+        final List<Integer> inputPowers = new ArrayList<>();
+        for (final String line : readFile("/pin.dat")) {
             inputPowers.add(parseInt(line));
         }
         return inputPowers;
     }
 
     private List<Laser> getLaserData() throws IOException {
-        final List<String> lines = readAllLines(get(DATA_FILE_PATH, "laser.dat"), defaultCharset());
-        final List<Laser> laserData = new ArrayList<>(lines.size());
-        for (final String line : lines) {
+        final List<Laser> laserData = new ArrayList<>();
+        for (final String line : readFile("/laser.dat")) {
             final String[] gainMediumParams = line.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
             laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
@@ -130,7 +113,7 @@ public final class Satin {
     }
 
     private int process(final List<Integer> inputPowers, final Laser laser) throws IOException {
-        final Path path = get(OUTPUT_FILE_PATH, laser.getOutputFile());
+        final Path path = Paths.get(System.getProperty("user.home"), "tmp", laser.getOutputFile());
         deleteIfExists(path);
         int count = 0;
         try (final Formatter formatter = new Formatter(createFile(path).toFile())) {
@@ -177,5 +160,16 @@ public final class Satin {
         }
 
         return gaussians;
+    }
+
+    private List<String> readFile(final String name) throws IOException {
+        final List<String> lines = new ArrayList<>();
+        try (final InputStream inputStream = getClass().getResourceAsStream(name);
+             final Scanner scanner = new Scanner(inputStream)) {
+            while (scanner.hasNext()) {
+                lines.add(scanner.nextLine());
+            }
+        }
+        return lines;
     }
 }
