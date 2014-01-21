@@ -6,6 +6,7 @@ package alankstewart.satin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,8 +30,6 @@ import static java.lang.System.nanoTime;
 import static java.lang.System.out;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
-import static java.nio.file.Files.createFile;
-import static java.nio.file.Files.deleteIfExists;
 
 public final class Satin {
 
@@ -114,9 +113,9 @@ public final class Satin {
 
     private int process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = Paths.get(System.getProperty("user.home"), "tmp", laser.getOutputFile());
-        deleteIfExists(path);
+        Files.deleteIfExists(path);
         int count = 0;
-        try (final Formatter formatter = new Formatter(createFile(path).toFile())) {
+        try (final Formatter formatter = new Formatter(Files.createFile(path).toFile())) {
             formatter
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
