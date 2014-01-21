@@ -167,7 +167,10 @@ public final class Satin {
         try (final InputStream inputStream = getClass().getResourceAsStream(name);
              final Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNext()) {
-                lines.add(scanner.nextLine());
+                final String line = scanner.nextLine();
+                if (line != null && !line.isEmpty()) {
+                    lines.add(line);
+                }
             }
         }
         return lines;
