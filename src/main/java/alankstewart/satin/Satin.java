@@ -81,7 +81,7 @@ public final class Satin {
         int total = 0;
 
         if (concurrent) {
-            final List<Callable<Integer>> tasks = new ArrayList(laserData.size());
+            final List<Callable<Integer>> tasks = new ArrayList<>(laserData.size());
             for (final Laser laser : laserData) {
                 tasks.add(new Callable<Integer>() {
                     @Override
@@ -110,7 +110,7 @@ public final class Satin {
 
     private List<Integer> getInputPowers() throws IOException {
         final List<String> lines = readAllLines(get(DATA_FILE_PATH, "pin.dat"), defaultCharset());
-        final List<Integer> inputPowers = new ArrayList(lines.size());
+        final List<Integer> inputPowers = new ArrayList<>(lines.size());
         for (final String line : lines) {
             inputPowers.add(parseInt(line));
         }
