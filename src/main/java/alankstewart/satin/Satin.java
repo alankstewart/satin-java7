@@ -48,36 +48,34 @@ public final class Satin {
         final long start = nanoTime();
         final Satin satin = new Satin();
         try {
-            if (!satin.calculate(args.length > 0 && args[0].equals("-concurrent"))) {
-                out.format("Failed to complete\n");
-            }
-        } catch (final IOException | RuntimeException e) {
-            out.format("%s\n", e.getMessage());
+            satin.calculate(args.length > 0 && args[0].equals("-concurrent"));
+        } catch (final Exception e) {
+            out.format("Failed to complete: %s\n", e.getMessage());
         } finally {
             out.format("The time was %s seconds\n", valueOf(nanoTime() - start)
                     .divide(valueOf(1E9), 3, ROUND_HALF_UP));
         }
     }
 
-    private boolean calculate(final boolean concurrent) throws IOException {
+    private void calculate(final boolean concurrent) throws IOException {
         final List<Integer> inputPowers = getInputPowers();
         final List<Laser> laserData = getLaserData();
-        int total = 0;
 
         if (concurrent) {
-            final List<Callable<Integer>> tasks = new ArrayList<>(laserData.size());
+            final List<Callable<Void>> tasks = new ArrayList<>(laserData.size());
             for (final Laser laser : laserData) {
-                tasks.add(new Callable<Integer>() {
+                tasks.add(new Callable<Void>() {
                     @Override
-                    public Integer call() throws Exception {
-                        return process(inputPowers, laser);
+                    public Void call() throws Exception {
+                        process(inputPowers, laser);
+                        return null;
                     }
                 });
             }
             final ExecutorService executorService = Executors.newCachedThreadPool();
             try {
-                for (final Future<Integer> future : executorService.invokeAll(tasks)) {
-                    total += future.get();
+                for (final Future<Void> future : executorService.invokeAll(tasks)) {
+                    future.get();
                 }
             } catch (final InterruptedException | ExecutionException e) {
                 throw new IllegalStateException(e);
@@ -86,10 +84,9 @@ public final class Satin {
             }
         } else {
             for (final Laser laser : laserData) {
-                total += process(inputPowers, laser);
+                process(inputPowers, laser);
             }
         }
-        return total == laserData.size() * inputPowers.size();
     }
 
     private List<Integer> getInputPowers() throws IOException {
@@ -111,10 +108,9 @@ public final class Satin {
         return laserData;
     }
 
-    private int process(final List<Integer> inputPowers, final Laser laser) throws IOException {
+    private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = Paths.get(System.getProperty("user.home"), "tmp", laser.getOutputFile());
         Files.deleteIfExists(path);
-        int count = 0;
         try (final Formatter formatter = new Formatter(Files.createFile(path).toFile())) {
             formatter
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
@@ -126,11 +122,9 @@ public final class Satin {
                             .getOutputPower(), gaussian.getSaturationIntensity(), gaussian
                             .getLogOutputPowerDividedByInputPower(), gaussian.getOutputPowerMinusInputPower());
                 }
-                count++;
             }
             formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
         }
-        return count;
     }
 
     private List<Gaussian> gaussianCalculation(final int inputPower, final float smallSignalGain) {
