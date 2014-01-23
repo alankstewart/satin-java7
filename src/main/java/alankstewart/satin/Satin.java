@@ -30,6 +30,7 @@ import static java.lang.System.nanoTime;
 import static java.lang.System.out;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
+import static java.util.Collections.unmodifiableList;
 
 public final class Satin {
 
@@ -94,7 +95,7 @@ public final class Satin {
         for (final String line : readFile("/pin.dat")) {
             inputPowers.add(parseInt(line));
         }
-        return inputPowers;
+        return unmodifiableList(inputPowers);
     }
 
     private List<Laser> getLaserData() throws IOException {
@@ -105,7 +106,7 @@ public final class Satin {
             laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
                     .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim())));
         }
-        return laserData;
+        return unmodifiableList(laserData);
     }
 
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
@@ -152,7 +153,7 @@ public final class Satin {
             gaussians.add(new Gaussian(inputPower, outputPower, saturationIntensity));
         }
 
-        return gaussians;
+        return unmodifiableList(gaussians);
     }
 
     private List<String> readFile(final String name) throws IOException {
@@ -166,6 +167,6 @@ public final class Satin {
                 }
             }
         }
-        return lines;
+        return unmodifiableList(lines);
     }
 }
