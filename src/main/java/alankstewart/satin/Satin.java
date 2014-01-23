@@ -117,6 +117,7 @@ public final class Satin {
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
                             .getCarbonDioxide().name());
+
             for (final int inputPower : inputPowers) {
                 for (final Gaussian gaussian : gaussianCalculation(inputPower, laser.getSmallSignalGain())) {
                     formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\n", gaussian.getInputPower(), gaussian
@@ -124,6 +125,7 @@ public final class Satin {
                             .getLogOutputPowerDividedByInputPower(), gaussian.getOutputPowerMinusInputPower());
                 }
             }
+
             formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
         }
     }
