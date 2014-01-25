@@ -53,17 +53,16 @@ public final class Satin {
         } catch (final Exception e) {
             out.format("Failed to complete: %s\n", e.getMessage());
         } finally {
-            out.format("The time was %s seconds\n", valueOf(nanoTime() - start)
-                    .divide(valueOf(1E9), 3, ROUND_HALF_UP));
+            out.format("The time was %s seconds\n", valueOf(nanoTime() - start).divide(valueOf(1E9), 3, ROUND_HALF_UP));
         }
     }
 
     private void calculate(final boolean concurrent) throws IOException {
-        final List<Integer> inputPowers = getInputPowers();
-        final List<Laser> laserData = getLaserData();
+        final int[] inputPowers = getInputPowers();
+        final Laser[] laserData = getLaserData();
 
         if (concurrent) {
-            final List<Callable<Void>> tasks = new ArrayList<>(laserData.size());
+            final List<Callable<Void>> tasks = new ArrayList<>(laserData.length);
             for (final Laser laser : laserData) {
                 tasks.add(new Callable<Void>() {
                     @Override
@@ -90,26 +89,28 @@ public final class Satin {
         }
     }
 
-    private List<Integer> getInputPowers() throws IOException {
-        final List<Integer> inputPowers = new ArrayList<>();
-        for (final String line : readFile("/pin.dat")) {
-            inputPowers.add(parseInt(line));
+    private int[] getInputPowers() throws IOException {
+        final List<String> lines = readFile("/pin.dat");
+        final int[] inputPowers = new int[lines.size()];
+        for (int i = 0; i < lines.size(); i++) {
+            inputPowers[i] = parseInt(lines.get(i).trim());
         }
-        return unmodifiableList(inputPowers);
+        return inputPowers;
     }
 
-    private List<Laser> getLaserData() throws IOException {
-        final List<Laser> laserData = new ArrayList<>();
-        for (final String line : readFile("/laser.dat")) {
-            final String[] gainMediumParams = line.split("  ");
+    private Laser[] getLaserData() throws IOException {
+        final List<String> lines = readFile("/laser.dat");
+        final Laser[] laserData = new Laser[lines.size()];
+        for (int i = 0; i < lines.size(); i++) {
+            final String[] gainMediumParams = lines.get(i).split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
-            laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
-                    .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim())));
+            laserData[i] = new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
+                    .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim()));
         }
-        return unmodifiableList(laserData);
+        return laserData;
     }
 
-    private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
+    private void process(final int[] inputPowers, final Laser laser) throws IOException {
         final Path path = Paths.get(System.getProperty("user.home"), "tmp", laser.getOutputFile());
         Files.deleteIfExists(path);
         try (final Formatter formatter = new Formatter(Files.createFile(path).toFile())) {
