@@ -49,7 +49,11 @@ public final class Satin {
         final long start = nanoTime();
         final Satin satin = new Satin();
         try {
-            satin.calculate(args.length > 0 && args[0].equals("-concurrent"));
+            if (args.length > 0 && args[0].equals("-concurrent")) {
+                satin.calculateConcurrently();
+            } else {
+                satin.calculate();;
+            }
         } catch (final Exception e) {
             out.format("Failed to complete: %s\n", e.getMessage());
         } finally {
@@ -57,41 +61,45 @@ public final class Satin {
         }
     }
 
-    private void calculate(final boolean concurrent) throws IOException {
+    private void calculateConcurrently() throws IOException {
         final List<Integer> inputPowers = getInputPowers();
         final List<Laser> laserData = getLaserData();
 
-        if (concurrent) {
-            final List<Callable<Void>> tasks = new ArrayList<>(laserData.size());
-            for (final Laser laser : laserData) {
-                tasks.add(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        process(inputPowers, laser);
-                        return null;
-                    }
-                });
-            }
-            final ExecutorService executorService = Executors.newCachedThreadPool();
-            try {
-                for (final Future<Void> future : executorService.invokeAll(tasks)) {
-                    future.get();
+        final List<Callable<Void>> tasks = new ArrayList<>(laserData.size());
+        for (final Laser laser : laserData) {
+            tasks.add(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    process(inputPowers, laser);
+                    return null;
                 }
-            } catch (final InterruptedException | ExecutionException e) {
-                throw new IllegalStateException(e);
-            } finally {
-                executorService.shutdown();
+            });
+        }
+
+        final ExecutorService executorService = Executors.newCachedThreadPool();
+        try {
+            for (final Future<Void> future : executorService.invokeAll(tasks)) {
+                future.get();
             }
-        } else {
-            for (final Laser laser : laserData) {
-                process(inputPowers, laser);
-            }
+        } catch (final InterruptedException | ExecutionException e) {
+            throw new IllegalStateException(e);
+        } finally {
+            executorService.shutdown();
+        }
+    }
+
+    private void calculate() throws IOException {
+        final List<Integer> inputPowers = getInputPowers();
+        final List<Laser> laserData = getLaserData();
+
+        for (final Laser laser : laserData) {
+            process(inputPowers, laser);
         }
     }
 
     private List<Integer> getInputPowers() throws IOException {
         final List<Integer> inputPowers = new ArrayList<>();
-        for (final String line : readFile("/pin.dat")) {
+        for (final String line : readDataFile("/pin.dat")) {
             inputPowers.add(parseInt(line));
         }
         return unmodifiableList(inputPowers);
@@ -99,7 +107,7 @@ public final class Satin {
 
     private List<Laser> getLaserData() throws IOException {
         final List<Laser> laserData = new ArrayList<>();
-        for (final String line : readFile("/laser.dat")) {
+        for (final String line : readDataFile("/laser.dat")) {
             final String[] gainMediumParams = line.split("  ");
             assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
             laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
@@ -157,7 +165,7 @@ public final class Satin {
         return unmodifiableList(gaussians);
     }
 
-    private List<String> readFile(final String name) throws IOException {
+    private List<String> readDataFile(final String name) throws IOException {
         final List<String> lines = new ArrayList<>();
         try (final InputStream inputStream = getClass().getResourceAsStream(name);
              final Scanner scanner = new Scanner(inputStream)) {
