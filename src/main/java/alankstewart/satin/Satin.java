@@ -52,7 +52,7 @@ public final class Satin {
             if (args.length > 0 && args[0].equals("-concurrent")) {
                 satin.calculateConcurrently();
             } else {
-                satin.calculate();;
+                satin.calculate();
             }
         } catch (final Exception e) {
             out.format("Failed to complete: %s\n", e.getMessage());
