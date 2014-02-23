@@ -114,6 +114,20 @@ public final class Satin {
         return unmodifiableList(laserData);
     }
 
+    private List<String> readDataFile(final String name) throws IOException {
+        final List<String> lines = new ArrayList<>();
+        try (final InputStream inputStream = getClass().getResourceAsStream(name);
+             final Scanner scanner = new Scanner(inputStream)) {
+            while (scanner.hasNext()) {
+                final String line = scanner.nextLine();
+                if (line != null && !line.isEmpty()) {
+                    lines.add(line);
+                }
+            }
+        }
+        return unmodifiableList(lines);
+    }
+
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = Paths.get(System.getProperty("java.io.tmpdir"), laser.getOutputFile());
         Files.deleteIfExists(path);
@@ -161,19 +175,5 @@ public final class Satin {
         }
 
         return unmodifiableList(gaussians);
-    }
-
-    private List<String> readDataFile(final String name) throws IOException {
-        final List<String> lines = new ArrayList<>();
-        try (final InputStream inputStream = getClass().getResourceAsStream(name);
-             final Scanner scanner = new Scanner(inputStream)) {
-            while (scanner.hasNext()) {
-                final String line = scanner.nextLine();
-                if (line != null && !line.isEmpty()) {
-                    lines.add(line);
-                }
-            }
-        }
-        return unmodifiableList(lines);
     }
 }
