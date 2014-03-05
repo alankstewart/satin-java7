@@ -30,8 +30,7 @@ import static java.lang.System.out;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 import static java.util.Collections.unmodifiableList;
 
 public final class Satin {
@@ -132,7 +131,7 @@ public final class Satin {
 
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = Paths.get(System.getProperty("user.dir"), laser.getOutputFile());
-        try (BufferedWriter bw = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE);
+        try (BufferedWriter bw = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
              final Formatter formatter = new Formatter(bw)) {
             formatter
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
