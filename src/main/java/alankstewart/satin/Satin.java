@@ -6,7 +6,7 @@ package alankstewart.satin;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static alankstewart.satin.Laser.CO2;
 import static java.lang.Float.parseFloat;
@@ -45,6 +47,7 @@ public final class Satin {
     private static final double Z12 = Z1 * Z1;
     private static final double EXPR = 2 * PI * DR;
     private static final int INCR = 8001;
+    private static final Path PATH = Paths.get(System.getProperty("user.dir"));
 
     public static void main(final String[] args) {
         final long start = nanoTime();
@@ -62,7 +65,7 @@ public final class Satin {
         }
     }
 
-    private void calculateConcurrently() throws IOException, ExecutionException, InterruptedException {
+    private void calculateConcurrently() throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         final List<Integer> inputPowers = getInputPowers();
         final List<Laser> laserData = getLaserData();
 
@@ -87,7 +90,7 @@ public final class Satin {
         }
     }
 
-    private void calculate() throws IOException {
+    private void calculate() throws IOException, URISyntaxException {
         final List<Integer> inputPowers = getInputPowers();
         final List<Laser> laserData = getLaserData();
 
@@ -96,43 +99,38 @@ public final class Satin {
         }
     }
 
-    private List<Integer> getInputPowers() throws IOException {
+    private List<Integer> getInputPowers() throws IOException, URISyntaxException {
         final List<Integer> inputPowers = new ArrayList<>();
-        for (final String line : readDataFile("/pin.dat")) {
-            inputPowers.add(parseInt(line));
+        try (final Scanner scanner = new Scanner(getDataFilePath("pin.dat"))) {
+            while (scanner.hasNextInt()) {
+                inputPowers.add(scanner.nextInt());
+            }
         }
         return unmodifiableList(inputPowers);
     }
 
-    private List<Laser> getLaserData() throws IOException {
+    private List<Laser> getLaserData() throws IOException, URISyntaxException {
+       final Pattern p = Pattern.compile("([mdpi]{2}[a-z]{2}\\.out)[ ]+([0-9]{2}.[0-9])[ ]+([0-9]+)[ ]+(MD|PI)");
         final List<Laser> laserData = new ArrayList<>();
-        for (final String line : readDataFile("/laser.dat")) {
-            final String[] gainMediumParams = line.split("  ");
-            assert gainMediumParams.length == 4 : "The laser data record must have 4 parameters";
-            laserData.add(new Laser(gainMediumParams[0], parseFloat(gainMediumParams[1]
-                    .trim()), parseInt(gainMediumParams[2].trim()), CO2.valueOf(gainMediumParams[3].trim())));
+        try (final Scanner scanner = new Scanner(getDataFilePath("laser.dat"))) {
+            while (scanner.hasNextLine()) {
+                final Matcher m = p.matcher(scanner.nextLine());
+                if (m.matches()) {
+                    laserData.add(new Laser(m.group(1), parseFloat(m.group(2)), parseInt(m.group(3)), CO2.valueOf(m.group(4))));
+                }
+            }
         }
         return unmodifiableList(laserData);
     }
 
-    private List<String> readDataFile(final String fileName) throws IOException {
-        final List<String> lines = new ArrayList<>();
-        try (final InputStream inputStream = getClass().getResourceAsStream(fileName);
-             final Scanner scanner = new Scanner(inputStream)) {
-            while (scanner.hasNext()) {
-                final String line = scanner.nextLine();
-                if (line != null && !line.isEmpty()) {
-                    lines.add(line);
-                }
-            }
-        }
-        return unmodifiableList(lines);
+    private Path getDataFilePath(String fileName) throws URISyntaxException {
+        return Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
     }
 
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
-        final Path path = Paths.get(System.getProperty("user.dir"), laser.getOutputFile());
-        try (BufferedWriter bw = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
-             final Formatter formatter = new Formatter(bw)) {
+        final Path path = PATH.resolve(laser.getOutputFile());
+        try (BufferedWriter writer = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
+             final Formatter formatter = new Formatter(writer)) {
             formatter
                     .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
