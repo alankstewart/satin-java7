@@ -7,6 +7,7 @@ package alankstewart.satin;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +35,7 @@ import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.file.StandardOpenOption.*;
 import static java.util.Collections.unmodifiableList;
+import static java.util.Objects.requireNonNull;
 
 public final class Satin {
 
@@ -124,7 +126,9 @@ public final class Satin {
     }
 
     private Path getDataFilePath(String fileName) throws URISyntaxException {
-        return Paths.get(getClass().getClassLoader().getResource(fileName).toURI());
+        final URL resource = getClass().getClassLoader().getResource(fileName);
+        requireNonNull(resource, "Failed to find resource");
+        return Paths.get(resource.toURI());
     }
 
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
