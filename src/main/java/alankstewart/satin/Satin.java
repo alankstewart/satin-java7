@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static alankstewart.satin.Laser.CO2;
-import static java.lang.Float.parseFloat;
+import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.*;
 import static java.lang.System.nanoTime;
@@ -39,11 +39,11 @@ import static java.util.Objects.requireNonNull;
 
 public final class Satin {
 
-    private static final float RAD = 0.18f;
-    private static final float W1 = 0.3f;
-    private static final float DR = 0.002f;
-    private static final float DZ = 0.04f;
-    private static final float LAMDA = 0.0106f;
+    private static final double RAD = 0.18;
+    private static final double W1 = 0.3;
+    private static final double DR = 0.002;
+    private static final double DZ = 0.04;
+    private static final double LAMDA = 0.0106f;
     private static final double AREA = PI * pow(RAD, 2);
     private static final double Z1 = PI * pow(W1, 2) / LAMDA;
     private static final double Z12 = Z1 * Z1;
@@ -118,7 +118,7 @@ public final class Satin {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
-                    laserData.add(new Laser(m.group(1), parseFloat(m.group(3)), parseInt(m.group(4)), CO2.valueOf(m.group(2).toUpperCase())));
+                    laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)), CO2.valueOf(m.group(2).toUpperCase())));
                 }
             }
         }
@@ -152,7 +152,7 @@ public final class Satin {
         }
     }
 
-    private List<Gaussian> gaussianCalculation(final int inputPower, final float smallSignalGain) {
+    private List<Gaussian> gaussianCalculation(final int inputPower, final double smallSignalGain) {
         final List<Gaussian> gaussians = new ArrayList<>();
 
         final double[] expr1 = new double[INCR];
@@ -167,7 +167,7 @@ public final class Satin {
         for (int saturationIntensity = 10000; saturationIntensity <= 25000; saturationIntensity += 1000) {
             double outputPower = 0.0;
             final double expr3 = saturationIntensity * expr2;
-            for (float r = 0; r <= 0.5f; r += DR) {
+            for (double r = 0; r <= 0.5; r += DR) {
                 double outputIntensity = inputIntensity * exp(-2 * pow(r, 2) / pow(RAD, 2));
                 for (int j = 0; j < INCR; j++) {
                     outputIntensity *= (1 + expr3 / (saturationIntensity + outputIntensity) - expr1[j]);
