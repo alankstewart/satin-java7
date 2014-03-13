@@ -127,7 +127,7 @@ public final class Satin {
 
     private Path getDataFilePath(String fileName) throws URISyntaxException {
         final URL resource = getClass().getClassLoader().getResource(fileName);
-        requireNonNull(resource, "Failed to find resource");
+        requireNonNull(resource, "Failed to find resource " + fileName);
         return Paths.get(resource.toURI());
     }
 
@@ -136,7 +136,7 @@ public final class Satin {
         try (BufferedWriter writer = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
              final Formatter formatter = new Formatter(writer)) {
             formatter
-                    .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int.\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
+                    .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
                             .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
                             .getCarbonDioxide().name());
 
