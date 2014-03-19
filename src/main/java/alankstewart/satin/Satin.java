@@ -27,13 +27,17 @@ import java.util.regex.Pattern;
 import static alankstewart.satin.Laser.CO2;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.exp;
+import static java.lang.Math.pow;
 import static java.lang.System.nanoTime;
 import static java.lang.System.out;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
-import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 
@@ -50,6 +54,7 @@ public final class Satin {
     private static final double EXPR = 2 * PI * DR;
     private static final int INCR = 8001;
     private static final Path PATH = Paths.get(System.getProperty("user.dir"));
+    private static final Pattern LASER = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
 
     public static void main(final String[] args) {
         final long start = nanoTime();
@@ -112,11 +117,10 @@ public final class Satin {
     }
 
     private List<Laser> getLaserData() throws IOException, URISyntaxException {
-       final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
         try (final Scanner scanner = new Scanner(getDataFilePath("laser.dat"))) {
             while (scanner.hasNextLine()) {
-                final Matcher m = p.matcher(scanner.nextLine());
+                final Matcher m = LASER.matcher(scanner.nextLine());
                 if (m.matches()) {
                     laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)), CO2.valueOf(m.group(2).toUpperCase())));
                 }
@@ -131,7 +135,7 @@ public final class Satin {
         return Paths.get(resource.toURI());
     }
 
-    private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
+    private void process(final List<Integer> inputPowers, final Laser laser) {
         final Path path = PATH.resolve(laser.getOutputFile());
         try (BufferedWriter writer = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
              final Formatter formatter = new Formatter(writer)) {
@@ -149,6 +153,8 @@ public final class Satin {
             }
 
             formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
+        } catch (final IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 
