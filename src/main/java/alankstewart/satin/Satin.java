@@ -136,10 +136,8 @@ public final class Satin {
         final Path path = PATH.resolve(laser.getOutputFile());
         try (BufferedWriter writer = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
              final Formatter formatter = new Formatter(writer)) {
-            formatter
-                    .format("Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int\tln(Pout/Pin)\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n", Calendar
-                            .getInstance().getTime(), laser.getDischargePressure(), laser.getSmallSignalGain(), laser
-                            .getCarbonDioxide().name());
+            formatter.format(getHeader(), Calendar.getInstance().getTime(), laser.getDischargePressure(),
+                    laser.getSmallSignalGain(), laser.getCarbonDioxide().name());
 
             for (final int inputPower : inputPowers) {
                 for (final Gaussian gaussian : gaussianCalculation(inputPower, laser.getSmallSignalGain())) {
@@ -153,6 +151,18 @@ public final class Satin {
         } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private String getHeader() {
+        return new StringBuilder()
+                .append("Start date: %s\n\n")
+                .append("Gaussian Beam\n\n")
+                .append("Pressure in Main Discharge = %skPa\n")
+                .append("Small-signal Gain = %s\n")
+                .append("CO2 via %s\n\n")
+                .append("Pin\t\tPout\t\tSat. Int\tln(Pout/Pin\tPout-Pin\n")
+                .append("(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n")
+                .toString();
     }
 
     private List<Gaussian> gaussianCalculation(final int inputPower, final double smallSignalGain) {
