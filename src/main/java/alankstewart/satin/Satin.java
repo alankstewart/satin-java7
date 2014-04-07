@@ -154,8 +154,7 @@ public final class Satin {
     }
 
     private String getHeader() {
-        return new StringBuilder()
-                .append("Start date: %s\n\n")
+        return new StringBuilder("Start date: %s\n\n")
                 .append("Gaussian Beam\n\n")
                 .append("Pressure in Main Discharge = %skPa\n")
                 .append("Small-signal Gain = %s\n")
