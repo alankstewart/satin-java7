@@ -112,11 +112,11 @@ public final class Satin {
     }
 
     private List<Laser> getLaserData() throws IOException, URISyntaxException {
-        final Pattern pattern = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
+        final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
         try (final Scanner scanner = new Scanner(getDataFilePath("laser.dat"))) {
             while (scanner.hasNextLine()) {
-                final Matcher m = pattern.matcher(scanner.nextLine());
+                final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
                     laserData.add(new Laser(m.group(1), m.group(3), m.group(4), m.group(2)));
                 }
