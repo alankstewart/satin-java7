@@ -103,7 +103,7 @@ public final class Satin {
 
     private List<Integer> getInputPowers() throws IOException, URISyntaxException {
         final List<Integer> inputPowers = new ArrayList<>();
-        try (final Scanner scanner = new Scanner(getDataFilePath("pin.dat"))) {
+        try (final Scanner scanner = scanDataFile("pin.dat")) {
             while (scanner.hasNextInt()) {
                 inputPowers.add(scanner.nextInt());
             }
@@ -114,7 +114,7 @@ public final class Satin {
     private List<Laser> getLaserData() throws IOException, URISyntaxException {
         final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
-        try (final Scanner scanner = new Scanner(getDataFilePath("laser.dat"))) {
+        try (final Scanner scanner = scanDataFile("laser.dat")) {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
@@ -123,6 +123,10 @@ public final class Satin {
             }
         }
         return unmodifiableList(laserData);
+    }
+
+    private Scanner scanDataFile(String fileName) throws IOException, URISyntaxException {
+        return new Scanner(getDataFilePath(fileName));
     }
 
     private Path getDataFilePath(String fileName) throws URISyntaxException {
@@ -153,7 +157,6 @@ public final class Satin {
             }
 
             formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
-            formatter.flush();
         } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
