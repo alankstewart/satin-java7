@@ -163,8 +163,6 @@ public final class Satin {
     }
 
     private List<Gaussian> gaussianCalculation(final int inputPower, final double smallSignalGain) {
-        final List<Gaussian> gaussians = new ArrayList<>();
-
         final double[] expr1 = new double[INCR];
         for (int i = 0; i < INCR; i++) {
             final double zInc = ((double) i - INCR / 2) / 25;
@@ -174,6 +172,7 @@ public final class Satin {
         final double inputIntensity = 2 * inputPower / AREA;
         final double expr2 = (smallSignalGain / 32E3) * DZ;
 
+        final List<Gaussian> gaussians = new ArrayList<>();
         for (int saturationIntensity = 10000; saturationIntensity <= 25000; saturationIntensity += 1000) {
             double outputPower = 0.0;
             final double expr3 = saturationIntensity * expr2;
@@ -186,7 +185,6 @@ public final class Satin {
             }
             gaussians.add(new Gaussian(inputPower, outputPower, saturationIntensity));
         }
-
         return unmodifiableList(gaussians);
     }
 }
