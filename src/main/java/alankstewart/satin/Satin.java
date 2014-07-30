@@ -174,8 +174,8 @@ public final class Satin {
 
         final List<Gaussian> gaussians = new ArrayList<>();
         for (int saturationIntensity = 10000; saturationIntensity <= 25000; saturationIntensity += 1000) {
-            double outputPower = 0.0;
             final double expr3 = saturationIntensity * expr2;
+            double outputPower = 0.0;
             for (double r = 0; r <= 0.5; r += DR) {
                 double outputIntensity = inputIntensity * exp(-2 * pow(r, 2) / pow(RAD, 2));
                 for (int j = 0; j < INCR; j++) {
