@@ -6,8 +6,8 @@ package alankstewart.satin;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +36,6 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Objects.requireNonNull;
 
 public final class Satin {
 
@@ -104,7 +103,7 @@ public final class Satin {
 
     private List<Integer> getInputPowers() throws IOException, URISyntaxException {
         final List<Integer> inputPowers = new ArrayList<>();
-        try (final Scanner scanner = scanDataFile("pin.dat")) {
+        try (final Scanner scanner = new Scanner(getDataFileInputStream("pin.dat"))) {
             while (scanner.hasNextInt()) {
                 inputPowers.add(scanner.nextInt());
             }
@@ -115,7 +114,7 @@ public final class Satin {
     private List<Laser> getLaserData() throws IOException, URISyntaxException {
         final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
-        try (final Scanner scanner = scanDataFile("laser.dat")) {
+        try (final Scanner scanner = new Scanner(getDataFileInputStream("laser.dat"))) {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
@@ -126,14 +125,8 @@ public final class Satin {
         return unmodifiableList(laserData);
     }
 
-    private Scanner scanDataFile(String fileName) throws IOException, URISyntaxException {
-        return new Scanner(getDataFilePath(fileName));
-    }
-
-    private Path getDataFilePath(String fileName) throws URISyntaxException {
-        final URL resource = getClass().getClassLoader().getResource(fileName);
-        requireNonNull(resource, "Failed to find resource " + fileName);
-        return Paths.get(resource.toURI());
+    private InputStream getDataFileInputStream(String fileName) throws URISyntaxException {
+        return getClass().getClassLoader().getResourceAsStream(fileName);
     }
 
     private void process(final List<Integer> inputPowers, final Laser laser) {
