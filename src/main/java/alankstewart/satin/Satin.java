@@ -7,7 +7,6 @@ package alankstewart.satin;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,12 +68,10 @@ public final class Satin {
         }
     }
 
-    private void calculateConcurrently() throws IOException, URISyntaxException, ExecutionException, InterruptedException {
+    private void calculateConcurrently() throws ExecutionException, InterruptedException {
         final List<Integer> inputPowers = getInputPowers();
-        final List<Laser> laserData = getLaserData();
-
-        final List<Callable<Void>> tasks = new ArrayList<>(laserData.size());
-        for (final Laser laser : laserData) {
+        final List<Callable<Void>> tasks = new ArrayList<>();
+        for (final Laser laser : getLaserData()) {
             tasks.add(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
@@ -94,14 +91,14 @@ public final class Satin {
         }
     }
 
-    private void calculate() throws IOException, URISyntaxException {
+    private void calculate() throws IOException {
         final List<Integer> inputPowers = getInputPowers();
         for (final Laser laser : getLaserData()) {
             process(inputPowers, laser);
         }
     }
 
-    private List<Integer> getInputPowers() throws IOException, URISyntaxException {
+    private List<Integer> getInputPowers() {
         final List<Integer> inputPowers = new ArrayList<>();
         try (final Scanner scanner = new Scanner(getDataFileInputStream("pin.dat"))) {
             while (scanner.hasNextInt()) {
@@ -111,7 +108,7 @@ public final class Satin {
         return unmodifiableList(inputPowers);
     }
 
-    private List<Laser> getLaserData() throws IOException, URISyntaxException {
+    private List<Laser> getLaserData() {
         final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
         try (final Scanner scanner = new Scanner(getDataFileInputStream("laser.dat"))) {
@@ -125,11 +122,11 @@ public final class Satin {
         return unmodifiableList(laserData);
     }
 
-    private InputStream getDataFileInputStream(String fileName) throws URISyntaxException {
+    private InputStream getDataFileInputStream(String fileName) {
         return getClass().getClassLoader().getResourceAsStream(fileName);
     }
 
-    private void process(final List<Integer> inputPowers, final Laser laser) {
+    private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = PATH.resolve(laser.getOutputFile());
         final String header = "Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int\tln(Pout/Pin\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n";
         try (BufferedWriter writer = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
@@ -152,8 +149,6 @@ public final class Satin {
             }
 
             formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
-        } catch (final IOException e) {
-            throw new IllegalStateException(e);
         }
     }
 
