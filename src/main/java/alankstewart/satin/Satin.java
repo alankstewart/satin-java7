@@ -80,7 +80,10 @@ public final class Satin {
                 }
             });
         }
+        invokeAllTasks(tasks);
+    }
 
+    private void invokeAllTasks(List<Callable<Void>> tasks) throws InterruptedException, ExecutionException {
         final ExecutorService executorService = Executors.newCachedThreadPool();
         try {
             for (final Future<Void> future : executorService.invokeAll(tasks)) {
