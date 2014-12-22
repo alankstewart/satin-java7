@@ -56,15 +56,22 @@ public final class Satin {
         final long start = nanoTime();
         final Satin satin = new Satin();
         try {
-            if (args.length > 0 && args[0].equals("-concurrent")) {
-                satin.calculateConcurrently();
-            } else {
+            if (args.length > 0 && args[0].equals("-single")) {
                 satin.calculate();
+            } else {
+                satin.calculateConcurrently();
             }
         } catch (final Exception e) {
             LOGGER.severe("Failed to complete: " + e.getMessage());
         } finally {
             LOGGER.info("The time was " + valueOf(nanoTime() - start).divide(valueOf(1E9), 3, ROUND_HALF_UP) + " seconds");
+        }
+    }
+
+    private void calculate() throws IOException {
+        final List<Integer> inputPowers = getInputPowers();
+        for (final Laser laser : getLaserData()) {
+            process(inputPowers, laser);
         }
     }
 
@@ -83,7 +90,7 @@ public final class Satin {
         invokeAllTasks(tasks);
     }
 
-    private void invokeAllTasks(List<Callable<Void>> tasks) throws InterruptedException, ExecutionException {
+    private void invokeAllTasks(final List<Callable<Void>> tasks) throws InterruptedException, ExecutionException {
         final ExecutorService executorService = Executors.newCachedThreadPool();
         try {
             for (final Future<Void> future : executorService.invokeAll(tasks)) {
@@ -91,13 +98,6 @@ public final class Satin {
             }
         } finally {
             executorService.shutdown();
-        }
-    }
-
-    private void calculate() throws IOException {
-        final List<Integer> inputPowers = getInputPowers();
-        for (final Laser laser : getLaserData()) {
-            process(inputPowers, laser);
         }
     }
 
@@ -125,7 +125,7 @@ public final class Satin {
         return unmodifiableList(laserData);
     }
 
-    private InputStream getDataFileInputStream(String fileName) {
+    private InputStream getDataFileInputStream(final String fileName) {
         return getClass().getClassLoader().getResourceAsStream(fileName);
     }
 
