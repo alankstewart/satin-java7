@@ -163,7 +163,7 @@ public final class Satin {
         }
 
         final double inputIntensity = 2 * inputPower / AREA;
-        final double expr2 = (smallSignalGain / 32E3) * DZ;
+        final double expr2 = smallSignalGain / 32E3 * DZ;
 
         final List<Gaussian> gaussians = new ArrayList<>();
         for (int saturationIntensity = 10000; saturationIntensity <= 25000; saturationIntensity += 1000) {
@@ -172,7 +172,7 @@ public final class Satin {
             for (double r = 0; r <= 0.5; r += DR) {
                 double outputIntensity = inputIntensity * exp(-2 * pow(r, 2) / RAD2);
                 for (int j = 0; j < INCR; j++) {
-                    outputIntensity *= (1 + expr3 / (saturationIntensity + outputIntensity) - expr1[j]);
+                    outputIntensity *= 1 + expr3 / (saturationIntensity + outputIntensity) - expr1[j];
                 }
                 outputPower += (outputIntensity * EXPR * r);
             }
