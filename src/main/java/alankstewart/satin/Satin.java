@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 import static java.lang.Math.PI;
 import static java.lang.Math.exp;
 import static java.lang.Math.pow;
@@ -118,7 +120,8 @@ public final class Satin {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
-                    laserData.add(new Laser(m.group(1), m.group(3), m.group(4), m.group(2)));
+                    laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)),
+                            Laser.CO2.valueOf(m.group(2).toUpperCase())));
                 }
             }
         }
@@ -155,7 +158,7 @@ public final class Satin {
         }
     }
 
-    private List<Gaussian> gaussianCalculation(final int inputPower, final double smallSignalGain) {
+    List<Gaussian> gaussianCalculation(final int inputPower, final double smallSignalGain) {
         final double[] expr1 = new double[INCR];
         for (int i = 0; i < INCR; i++) {
             final double zInc = ((double) i - INCR / 2) / 25;
