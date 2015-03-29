@@ -164,9 +164,8 @@ public final class Satin {
             final double zInc = ((double) i - INCR / 2) / 25;
             expr1[i] = 2 * zInc * DZ / (Z12 + pow(zInc, 2));
         }
-
-        final double inputIntensity = 2 * inputPower / AREA;
         final double expr2 = smallSignalGain / 32E3 * DZ;
+        final double inputIntensity = 2 * inputPower / AREA;
 
         final List<Gaussian> gaussians = new ArrayList<>();
         for (int saturationIntensity = 10000; saturationIntensity <= 25000; saturationIntensity += 1000) {
