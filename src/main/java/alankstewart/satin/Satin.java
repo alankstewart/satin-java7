@@ -145,7 +145,7 @@ public final class Satin {
 
             for (final int inputPower : inputPowers) {
                 for (final Gaussian gaussian : gaussianCalculation(inputPower, laser.getSmallSignalGain())) {
-                    formatter.format("%s\t\t%s\t\t%s\t\t%s\t\t%s\n",
+                    formatter.format("%d\t\t%s\t\t%d\t\t%s\t\t%s\n",
                             gaussian.getInputPower(),
                             gaussian.getOutputPower(),
                             gaussian.getSaturationIntensity(),

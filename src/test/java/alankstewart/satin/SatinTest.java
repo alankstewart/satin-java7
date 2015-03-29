@@ -81,6 +81,7 @@ public class SatinTest {
         assertTrue(gaussian.getOutputPowerMinusInputPower().compareTo(new BigDecimal("25.448")) == 0);
 
         gaussian = getGaussian(gaussians, 25000);
+        System.out.println(gaussian);
         assertTrue(gaussian.getOutputPower().compareTo(new BigDecimal("179.139")) == 0);
         assertTrue(gaussian.getLogOutputPowerDividedByInputPower().compareTo(new BigDecimal("0.178")) == 0);
         assertTrue(gaussian.getOutputPowerMinusInputPower().compareTo(new BigDecimal("29.139")) == 0);
@@ -106,7 +107,7 @@ public class SatinTest {
 
     private Gaussian getGaussian(List<Gaussian> gaussians, int saturationIntensity) {
         for (Gaussian gaussian : gaussians) {
-            if (gaussian.getSaturationIntensity().compareTo(BigInteger.valueOf(saturationIntensity)) == 0) {
+            if (gaussian.getSaturationIntensity() == saturationIntensity) {
                 return gaussian;
             }
         }
