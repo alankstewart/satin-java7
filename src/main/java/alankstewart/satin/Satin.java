@@ -10,11 +10,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -64,7 +60,7 @@ public final class Satin {
                 satin.calculateConcurrently();
             }
         } catch (final Exception e) {
-            LOGGER.severe("Failed to complete: " + e.getMessage());
+            LOGGER.severe(e.getMessage());
         } finally {
             LOGGER.info("The time was " + valueOf(nanoTime() - start).divide(valueOf(1E9), 3, ROUND_HALF_UP) + " seconds");
         }
@@ -129,7 +125,9 @@ public final class Satin {
     }
 
     private InputStream getDataFileInputStream(final String fileName) {
-        return getClass().getClassLoader().getResourceAsStream(fileName);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
+        Objects.requireNonNull(inputStream, "Failed to find file " + fileName);
+        return inputStream;
     }
 
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
