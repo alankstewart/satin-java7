@@ -116,8 +116,7 @@ public final class Satin {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
-                    laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)),
-                            Laser.CO2.valueOf(m.group(2).toUpperCase())));
+                    laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)), Laser.CO2.valueOf(m.group(2).toUpperCase())));
                 }
             }
         }
