@@ -16,7 +16,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +35,6 @@ import static java.util.Collections.unmodifiableList;
 
 public final class Satin {
 
-    private static final Logger LOGGER = Logger.getLogger(Satin.class.getName());
     private static final Path PATH = Paths.get(System.getProperty("user.dir"));
     private static final double RAD = 0.18;
     private static final double RAD2 = pow(RAD, 2);
@@ -60,9 +58,9 @@ public final class Satin {
                 satin.calculateConcurrently();
             }
         } catch (final Exception e) {
-            LOGGER.severe(e.getMessage());
+            System.err.println(e.getMessage());
         } finally {
-            LOGGER.info("The time was " + valueOf(nanoTime() - start).divide(valueOf(1E9), 3, ROUND_HALF_UP) + " seconds");
+            System.out.format("The time was %.3f seconds\n", valueOf(nanoTime() - start).divide(valueOf(1E9), 3, ROUND_HALF_UP));
         }
     }
 
