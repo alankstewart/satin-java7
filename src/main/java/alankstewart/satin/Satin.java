@@ -11,29 +11,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
-import static java.lang.Math.PI;
-import static java.lang.Math.exp;
-import static java.lang.Math.pow;
+import static java.lang.Math.*;
 import static java.lang.System.nanoTime;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import static java.nio.file.StandardOpenOption.*;
 import static java.util.Collections.unmodifiableList;
 
-public final class Satin {
+final class Satin {
 
     private static final Path PATH = Paths.get(System.getProperty("user.dir"));
     private static final double RAD = 0.18;
@@ -114,7 +106,7 @@ public final class Satin {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
-                    laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)), Laser.CO2.valueOf(m.group(2).toUpperCase())));
+                    laserData.add(new Laser(m.group(1), parseDouble(m.group(3)), parseInt(m.group(4)), m.group(2)));
                 }
             }
         }
@@ -136,7 +128,7 @@ public final class Satin {
                     Calendar.getInstance().getTime(),
                     laser.getDischargePressure(),
                     laser.getSmallSignalGain(),
-                    laser.getCarbonDioxide().name());
+                    laser.getCarbonDioxide());
 
             for (final int inputPower : inputPowers) {
                 for (final Gaussian gaussian : gaussianCalculation(inputPower, laser.getSmallSignalGain())) {
@@ -159,7 +151,7 @@ public final class Satin {
             final double zInc = ((double) i - INCR / 2) / 25;
             expr1[i] = 2 * zInc * DZ / (Z12 + pow(zInc, 2));
         }
-        final double expr2 = smallSignalGain / 32E3 * DZ;
+        final double expr2 = smallSignalGain / 32000 * DZ;
         final double inputIntensity = 2 * inputPower / AREA;
 
         final List<Gaussian> gaussians = new ArrayList<>();
