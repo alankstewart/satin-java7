@@ -75,7 +75,7 @@ final class Satin {
                 }
             });
         }
-Fo
+
         final ExecutorService executorService = Executors.newCachedThreadPool();
         try {
             for (final Future<Void> future : executorService.invokeAll(tasks)) {
