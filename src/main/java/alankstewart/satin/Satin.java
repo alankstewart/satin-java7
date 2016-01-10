@@ -63,7 +63,7 @@ final class Satin {
         }
     }
 
-    private void calculateConcurrently() throws ExecutionException, InterruptedException {
+    private void calculateConcurrently() throws ExecutionException, InterruptedException, IOException {
         final List<Integer> inputPowers = getInputPowers();
         final List<Callable<Void>> tasks = new ArrayList<>();
         for (final Laser laser : getLaserData()) {
@@ -75,10 +75,6 @@ final class Satin {
                 }
             });
         }
-        invokeAllTasks(tasks);
-    }
-
-    private void invokeAllTasks(final List<Callable<Void>> tasks) throws InterruptedException, ExecutionException {
         final ExecutorService executorService = Executors.newCachedThreadPool();
         try {
             for (final Future<Void> future : executorService.invokeAll(tasks)) {
@@ -89,9 +85,10 @@ final class Satin {
         }
     }
 
-    private List<Integer> getInputPowers() {
+    private List<Integer> getInputPowers() throws IOException {
         final List<Integer> inputPowers = new ArrayList<>();
-        try (final Scanner scanner = new Scanner(getDataFileInputStream("pin.dat"))) {
+        try (final InputStream inputStream = getClass().getClassLoader().getResourceAsStream("pin.dat");
+             final Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextInt()) {
                 inputPowers.add(scanner.nextInt());
             }
@@ -99,10 +96,11 @@ final class Satin {
         return unmodifiableList(inputPowers);
     }
 
-    private List<Laser> getLaserData() {
+    private List<Laser> getLaserData() throws IOException {
         final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
-        try (final Scanner scanner = new Scanner(getDataFileInputStream("laser.dat"))) {
+        try (final InputStream inputStream = getClass().getClassLoader().getResourceAsStream("laser.dat");
+             final Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
@@ -111,12 +109,6 @@ final class Satin {
             }
         }
         return unmodifiableList(laserData);
-    }
-
-    private InputStream getDataFileInputStream(final String fileName) {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
-        Objects.requireNonNull(inputStream, "Failed to find file " + fileName);
-        return inputStream;
     }
 
     private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
