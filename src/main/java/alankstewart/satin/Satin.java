@@ -5,6 +5,7 @@
 package alankstewart.satin;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -19,7 +20,7 @@ import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.*;
 import static java.lang.System.nanoTime;
-import static java.math.BigDecimal.ROUND_HALF_UP;
+import static java.math.RoundingMode.HALF_UP;
 import static java.math.BigDecimal.valueOf;
 import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.file.StandardOpenOption.*;
@@ -52,7 +53,7 @@ final class Satin {
         } catch (final Exception e) {
             System.err.println(e.getMessage());
         } finally {
-            System.out.format("The time was %.3f seconds\n", valueOf(nanoTime() - start).divide(valueOf(1E9), 3, ROUND_HALF_UP));
+            System.out.format("The time was %.3f seconds\n", valueOf(nanoTime() - start).divide(valueOf(1E9), 3, HALF_UP));
         }
     }
 
@@ -65,20 +66,19 @@ final class Satin {
 
     private void calculateConcurrently() throws ExecutionException, InterruptedException, IOException {
         final List<Integer> inputPowers = getInputPowers();
-        final List<Callable<Void>> tasks = new ArrayList<>();
+        final List<Callable<File>> tasks = new ArrayList<>();
         for (final Laser laser : getLaserData()) {
-            tasks.add(new Callable<Void>() {
+            tasks.add(new Callable<File>() {
                 @Override
-                public Void call() throws Exception {
-                    process(inputPowers, laser);
-                    return null;
+                public File call() throws Exception {
+                    return process(inputPowers, laser);
                 }
             });
         }
 
         final ExecutorService executorService = Executors.newCachedThreadPool();
         try {
-            for (final Future<Void> future : executorService.invokeAll(tasks)) {
+            for (final Future<File> future : executorService.invokeAll(tasks)) {
                 future.get();
             }
         } finally {
@@ -112,7 +112,7 @@ final class Satin {
         return unmodifiableList(laserData);
     }
 
-    private void process(final List<Integer> inputPowers, final Laser laser) throws IOException {
+    private File process(final List<Integer> inputPowers, final Laser laser) throws IOException {
         final Path path = PATH.resolve(laser.getOutputFile());
         final String header = "Start date: %s\n\nGaussian Beam\n\nPressure in Main Discharge = %skPa\nSmall-signal Gain = %s\nCO2 via %s\n\nPin\t\tPout\t\tSat. Int\tln(Pout/Pin\tPout-Pin\n(watts)\t\t(watts)\t\t(watts/cm2)\t\t\t(watts)\n";
         try (BufferedWriter writer = Files.newBufferedWriter(path, defaultCharset(), CREATE, WRITE, TRUNCATE_EXISTING);
@@ -136,6 +136,7 @@ final class Satin {
 
             formatter.format("\nEnd date: %s\n", Calendar.getInstance().getTime());
         }
+        return path.toFile();
     }
 
     List<Gaussian> gaussianCalculation(final int inputPower, final double smallSignalGain) {

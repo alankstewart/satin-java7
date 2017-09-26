@@ -3,8 +3,8 @@ package alankstewart.satin;
 import java.math.BigDecimal;
 
 import static java.lang.Math.log;
-import static java.math.BigDecimal.ROUND_HALF_UP;
 import static java.math.BigDecimal.valueOf;
+import static java.math.RoundingMode.HALF_UP;
 
 final class Gaussian {
 
@@ -18,8 +18,8 @@ final class Gaussian {
         this.inputPower = inputPower;
         this.outputPower = outputPower;
         this.saturationIntensity = saturationIntensity;
-        logOutputPowerDividedByInputPower = valueOf(log(this.outputPower / this.inputPower)).setScale(3, ROUND_HALF_UP);
-        outputPowerMinusInputPower = valueOf(this.outputPower).subtract(valueOf(this.inputPower)).setScale(3, ROUND_HALF_UP);
+        logOutputPowerDividedByInputPower = valueOf(log(this.outputPower / this.inputPower)).setScale(3, HALF_UP);
+        outputPowerMinusInputPower = valueOf(this.outputPower).subtract(valueOf(this.inputPower)).setScale(3, HALF_UP);
     }
 
     public int getInputPower() {
@@ -27,7 +27,7 @@ final class Gaussian {
     }
 
     public BigDecimal getOutputPower() {
-        return valueOf(outputPower).setScale(3, ROUND_HALF_UP);
+        return valueOf(outputPower).setScale(3, HALF_UP);
     }
 
     public int getSaturationIntensity() {
