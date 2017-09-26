@@ -20,8 +20,8 @@ import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.*;
 import static java.lang.System.nanoTime;
-import static java.math.RoundingMode.HALF_UP;
 import static java.math.BigDecimal.valueOf;
+import static java.math.RoundingMode.HALF_UP;
 import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.file.StandardOpenOption.*;
 import static java.util.Collections.unmodifiableList;
@@ -98,10 +98,10 @@ final class Satin {
     }
 
     private List<Laser> getLaserData() throws IOException {
-        final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
         final List<Laser> laserData = new ArrayList<>();
         try (final InputStream inputStream = getClass().getClassLoader().getResourceAsStream("laser.dat");
              final Scanner scanner = new Scanner(inputStream)) {
+            final Pattern p = Pattern.compile("((md|pi)[a-z]{2}\\.out)\\s+([0-9]{2}\\.[0-9])\\s+([0-9]+)\\s+(?i:\\2)");
             while (scanner.hasNextLine()) {
                 final Matcher m = p.matcher(scanner.nextLine());
                 if (m.matches()) {
